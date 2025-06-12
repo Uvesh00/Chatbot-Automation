@@ -9,51 +9,15 @@ from selenium.webdriver.support import expected_conditions as EC
 import streamlit as st
 
 ENV_CONFIG = {
-    "Solutions Dev": {
-        "username_selector": {"by": "id", "value": "userID"},
-        "password_selector": {"by": "id", "value": "password"},
-        "submit_selector": {"by": "class_name", "value": "btn-dark"}
-    },
-    "Products": {
-        "username_selector": {"by": "id", "value": "userID"},
-        "password_selector": {"by": "id", "value": "password"},
-        "submit_selector": {"by": "class_name", "value": "btn-dark"}
-    },
-    "UAT": {
-        "username_selector": {"by": "id", "value": "userID"},
-        "password_selector": {"by": "id", "value": "password"},
-        "submit_selector": {"by": "class_name", "value": "btn-dark"}
-    },
-    "Production": {
-        "username_selector": {"by": "id", "value": "userID"},
-        "password_selector": {"by": "id", "value": "password"},
-        "submit_selector": {"by": "class_name", "value": "btn-dark"}
-    },
-    "Newpresales": {
-        "username_selector": {"by": "id", "value": "userID"},
-        "password_selector": {"by": "id", "value": "password"},
-        "submit_selector": {"by": "class_name", "value": "btn-dark"}
-    },
-    "DESIT": {
-        "username_selector": {"by": "name", "value": "un"},
-        "password_selector": {"by": "name", "value": "pw"},
-        "submit_selector": {"by": "class_name", "value": "btn-primary"}
-    },
-    "DEQA": {
-        "username_selector": {"by": "name", "value": "un"},
-        "password_selector": {"by": "name", "value": "pw"},
-        "submit_selector": {"by": "class_name", "value": "btn-primary"}
-    },
-    "DEUAT": {
-        "username_selector": {"by": "name", "value": "un"},
-        "password_selector": {"by": "name", "value": "pw"},
-        "submit_selector": {"by": "class_name", "value": "btn-primary"}
-    },
-    "Rybot Production": {
-        "username_selector": {"by": "name", "value": "un"},
-        "password_selector": {"by": "name", "value": "pw"},
-        "submit_selector": {"by": "class_name", "value": "btn-primary"}
-    }
+    "Solutions Dev": {"username_selector": {"by": "id", "value": "userID"}, "password_selector": {"by": "id", "value": "password"}, "submit_selector": {"by": "class_name", "value": "btn-dark"}},
+    "Products": {"username_selector": {"by": "id", "value": "userID"}, "password_selector": {"by": "id", "value": "password"}, "submit_selector": {"by": "class_name", "value": "btn-dark"}},
+    "UAT": {"username_selector": {"by": "id", "value": "userID"}, "password_selector": {"by": "id", "value": "password"}, "submit_selector": {"by": "class_name", "value": "btn-dark"}},
+    "Production": {"username_selector": {"by": "id", "value": "userID"}, "password_selector": {"by": "id", "value": "password"}, "submit_selector": {"by": "class_name", "value": "btn-dark"}},
+    "Newpresales": {"username_selector": {"by": "id", "value": "userID"}, "password_selector": {"by": "id", "value": "password"}, "submit_selector": {"by": "class_name", "value": "btn-dark"}},
+    "DESIT": {"username_selector": {"by": "name", "value": "un"}, "password_selector": {"by": "name", "value": "pw"}, "submit_selector": {"by": "class_name", "value": "btn-primary"}},
+    "DEQA": {"username_selector": {"by": "name", "value": "un"}, "password_selector": {"by": "name", "value": "pw"}, "submit_selector": {"by": "class_name", "value": "btn-primary"}},
+    "DEUAT": {"username_selector": {"by": "name", "value": "un"}, "password_selector": {"by": "name", "value": "pw"}, "submit_selector": {"by": "class_name", "value": "btn-primary"}},
+    "Rybot Production": {"username_selector": {"by": "name", "value": "un"}, "password_selector": {"by": "name", "value": "pw"}, "submit_selector": {"by": "class_name", "value": "btn-primary"}}
 }
 
 BY_MAP = {
@@ -69,6 +33,10 @@ def run_test(env_name, url, username, password, file, live_preview=False):
     env = ENV_CONFIG[env_name]
 
     options = webdriver.ChromeOptions()
+
+    # ✨ Always use a unique user data directory to avoid session conflict
+    options.add_argument(f'--user-data-dir={tempfile.mkdtemp()}')
+
     if not live_preview:
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
@@ -116,7 +84,7 @@ def run_test(env_name, url, username, password, file, live_preview=False):
 
             try:
                 wait.until(lambda d: d.find_elements(By.CSS_SELECTOR, ".leftmsg") and
-                           d.find_elements(By.CSS_SELECTOR, ".leftmsg")[-1].text.strip() != previous_response)
+                                     d.find_elements(By.CSS_SELECTOR, ".leftmsg")[-1].text.strip() != previous_response)
 
                 responses = driver.find_elements(By.CSS_SELECTOR, ".leftmsg")
                 last_response = responses[-1].text.strip()
@@ -151,6 +119,7 @@ def run_test(env_name, url, username, password, file, live_preview=False):
 
     return pd.DataFrame(results)
 
+# 🎯 Streamlit UI
 st.title("Chatbot Automation Tester")
 
 env_name = st.selectbox("Select Environment", list(ENV_CONFIG.keys()))
