@@ -38,9 +38,11 @@ def run_test(env_name, url, username, password, file, live_preview=False):
     options.add_argument(f'--user-data-dir={tempfile.mkdtemp()}')
 
     if not live_preview:
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--headless=new')  # Updated headless mode
+else:
+    options.add_argument('--disable-gpu')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
 
     driver = webdriver.Chrome(options=options)
     results = []
